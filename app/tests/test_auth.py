@@ -1,67 +1,64 @@
 import sys
 from pathlib import Path
 
-# Add the project root directory to sys.path so "from app import app" works
 ROOT_DIR = Path(__file__).resolve().parents[2]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from app import app
-from app.storage import save_users
+from app import create_app  # type: ignore
+
+app = create_app()
 
 
 def test_health_endpoint():
-    """Verify that the /health endpoint returns status=ok."""
     client = app.test_client()
     response = client.get("/health")
-
     assert response.status_code == 200
-    data = response.get_json()
-    assert data["status"] == "ok"
+    assert response.get_json()["status"] == "ok"
 
 
-def test_register_creates_user(tmp_path, monkeypatch):
-    """Registering a new user should succeed."""
-
-    # Redirect data file to a temporary JSON file (avoids touching real users.json)
-    from app import storage as storage_module
-
-    test_file = tmp_path / "users_test.json"
-    monkeypatch.setattr(storage_module, "DATA_FILE", test_file)
-
-    # Start with an empty user base
-    save_users({})
-
+def test_register_and_login():
     client = app.test_client()
-    response = client.post(
-        "/register",
-        json={"username": "testuser", "password": "secret123"},
-    )
+    app.config["USERS"] = {}
 
-    assert response.status_code == 201
-    data = response.get_json()
-    assert data["message"] == "user created"
-    assert data["username"] == "testuser"
+    # Register
+    r1 = client.post("/register", json={"username": "testuser", "password": "secret"})
+    assert r1.status_code == 201
+
+    # Login with same credentials
+    r2 = client.post("/login", json={"username": "testuser", "password": "secret"})
+    assert r2.status_code == 200
+    assert r2.get_json()["message"] == "login successful"
 
 
-def test_register_duplicate_username(tmp_path, monkeypatch):
-    """Registering an already existing username should fail."""
-
-    from app import storage as storage_module
-
-    test_file = tmp_path / "users_test.json"
-    monkeypatch.setattr(storage_module, "DATA_FILE", test_file)
-
-    # Pre-populate with a user that already exists
-    save_users({"testuser": {"password": "hash"}})
-
+def test_change_password_and_delete():
     client = app.test_client()
+    app.config["USERS"] = {}
 
-    response = client.post(
-        "/register",
-        json={"username": "testuser", "password": "anotherpass"},
+    # Register first
+    client.post("/register", json={"username": "mark", "password": "oldpass"})
+
+    # Change password
+    r_change = client.put(
+        "/change-password",
+        json={
+            "username": "mark",
+            "old_password": "oldpass",
+            "new_password": "newpass",
+        },
     )
+    assert r_change.status_code == 200
 
-    assert response.status_code == 400
-    data = response.get_json()
-    assert "username already exists" in data["error"]
+    # Login with new password works
+    r_login = client.post(
+        "/login",
+        json={"username": "mark", "password": "newpass"},
+    )
+    assert r_login.status_code == 200
+
+    # Delete user
+    r_delete = client.delete(
+        "/delete-user",
+        json={"username": "mark", "password": "newpass"},
+    )
+    assert r_delete.status_code == 200

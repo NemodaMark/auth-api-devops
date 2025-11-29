@@ -1,0 +1,80 @@
+body {
+    font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #121417;
+    color: #f8f9fa;
+}
+
+/* Cards */
+.auth-card {
+    background: #2f343a;
+    border: none;
+    border-radius: 16px;
+    color: #f8f9fa;
+}
+
+.response-card {
+    background: #1a1d21;
+    border: none;
+    border-radius: 16px;
+    color: #f8f9fa;
+}
+
+.card-title {
+    font-weight: 600;
+}
+
+/* Labels and inputs */
+.form-label {
+    color: #e5e7eb;
+}
+
+.form-control {
+    background-color: #1f2328;
+    border-color: #3b4048;
+    color: #f8f9fa;
+}
+
+.form-control::placeholder {
+    color: #9ca3af;
+}
+
+/* Shared button theme */
+.btn-auth {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #f9fafb;
+    font-weight: 500;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.btn-auth:hover {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.btn-auth-secondary {
+    background: #4b5563;
+    border-color: #4b5563;
+    color: #f9fafb;
+    font-weight: 500;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.btn-auth-secondary:hover {
+    background: #374151;
+    border-color: #374151;
+    transform: translateY(-1px);
+}
+
+/* Response box */
+.response-box {
+    min-height: 200px;
+    background: #111827;
+    color: #e5e7eb;
+    padding: 1rem;
+    border-radius: 12px;
+    white-space: pre-wrap;
+    font-family: "Consolas", "Fira Code", monospace;
+    font-size: 0.9rem;
+}
