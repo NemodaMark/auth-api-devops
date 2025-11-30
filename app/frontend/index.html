@@ -15,8 +15,11 @@
 <body class="bg-dark text-light">
 
 <nav class="navbar navbar-dark bg-black shadow-sm">
-    <div class="container">
+    <div class="container d-flex justify-content-between align-items-center">
         <span class="navbar-brand mb-0 h1">Auth API Dashboard</span>
+        <span id="runtimeBadge" class="badge bg-secondary">
+            Checking...
+        </span>
     </div>
 </nav>
 
@@ -87,5 +90,12 @@
 </main>
 
 <script src="/static/app.js"></script>
+<script>
+    // Call runtime badge update on page load, then every 10 seconds
+    if (typeof updateRuntimeBadge === "function") {
+        updateRuntimeBadge();
+        setInterval(updateRuntimeBadge, 10000);
+    }
+</script>
 </body>
 </html>

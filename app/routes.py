@@ -21,6 +21,16 @@ def register_routes(app):
     def health():
         return jsonify({"status": "ok"}), 200
 
+    @app.route("/runtime-info", methods=["GET"])
+    def runtime_info():
+        """
+        Returns basic runtime information, including whether the app is running inside Docker.
+        """
+        return jsonify({
+            "status": "ok",
+            "running_in_docker": current_app.config.get("RUNNING_IN_DOCKER", False)
+        }), 200
+
     @app.route("/register", methods=["POST"])
     def register():
         data = request.get_json(silent=True) or {}

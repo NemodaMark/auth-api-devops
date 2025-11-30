@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8080"; // or "" if you prefer same-origin
+const API_BASE = "";
 
 function showResponse(data, status) {
     const box = document.getElementById("responseBox");
@@ -95,3 +95,33 @@ async function deleteUserAccount() {
     const data = await res.json();
     showResponse(data, res.status);
 }
+
+async function updateRuntimeBadge() {
+    const badge = document.getElementById("runtimeBadge");
+    if (!badge) return;
+
+    try {
+        const res = await fetch(`${API_BASE}/runtime-info`);
+        const data = await res.json();
+
+        if (data.running_in_docker) {
+            badge.textContent = "Docker";
+            badge.classList.remove("bg-secondary", "bg-warning", "text-dark");
+            badge.classList.add("bg-success");
+        } else {
+            badge.textContent = "Local";
+            badge.classList.remove("bg-secondary", "bg-success");
+            badge.classList.add("bg-warning", "text-dark");
+        }
+    } catch (e) {
+        badge.textContent = "Unknown";
+        badge.classList.remove("bg-success", "bg-warning");
+        badge.classList.add("bg-secondary");
+    }
+}
+// Call immediately since script is loaded after HTML
+updateRuntimeBadge();
+
+// Refresh every 10 seconds
+setInterval(updateRuntimeBadge, 10000);
+

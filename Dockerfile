@@ -27,3 +27,5 @@ ENV FLASK_ENV=production
 
 # Run the app
 CMD ["python", "-m", "app.main"]
+
+ENV RUNNING_IN_DOCKER=1
